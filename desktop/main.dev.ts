@@ -17,6 +17,8 @@ import 'regenerator-runtime/runtime';
 import fetch from 'electron-fetch';
 
 import { ipcConsts } from '../app/vars';
+import { PublicServices } from '../shared/types';
+import { DiscoveryResponce } from '../shared/schemas';
 import MenuBuilder from './menu';
 import AutoStartManager from './autoStartManager';
 import StoreService from './storeService';
@@ -243,7 +245,8 @@ const createWindow = async () => {
   });
 
   const res = await fetch(DISCOVERY_URL);
-  const initialConfig = (await res.json())[0];
+  const discovery: DiscoveryResponce = await res.json();
+  const initialConfig = discovery[0];
   const savedNetId = StoreService.get('netSettings.netId');
   const cleanStart = savedNetId !== initialConfig.netID;
   const configFilePath = path.resolve(app.getAppPath(), process.env.NODE_ENV === 'development' ? './' : '../../config', 'config.json');
@@ -260,6 +263,13 @@ const createWindow = async () => {
     StoreService.set('netSettings.genesisTime', netConfig.main['genesis-time']);
     await writeFileAsync(configFilePath, JSON.stringify(netConfig));
   }
+
+  const walletServices: PublicServices = discovery.map(({ netName: name, grpcAPI: url }) => ({
+    name,
+    // Remove `https://` and trailing slash to resolve ip address
+    url: url.replace(/^https:\/\//, '').replace(/\/$/, '')
+  }));
+  ipcMain.handle(ipcConsts.LIST_PUBLIC_SERVICES, () => walletServices);
 
   nodeManager = new NodeManager(mainWindow, configFilePath, cleanStart);
   // eslint-disable-next-line no-new

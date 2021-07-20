@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 import { app, dialog, shell, ipcMain, BrowserWindow } from 'electron';
 import { ipcConsts } from '../app/vars';
-import { SocketAddress } from '../shared/types';
+import { SocketAddress, WalletMeta } from '../shared/types';
 import MeshService from './MeshService';
 import GlobalStateService from './GlobalStateService';
 import TransactionManager from './transactionManager';

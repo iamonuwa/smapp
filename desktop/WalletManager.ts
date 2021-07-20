@@ -37,7 +37,7 @@ class WalletManager {
 
   private readonly glStateService: any;
 
-  private readonly txService: any;
+  private readonly txService: TransactionService;
 
   private nodeManager: NodeManager;
 

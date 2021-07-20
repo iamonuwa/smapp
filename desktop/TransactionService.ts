@@ -6,7 +6,7 @@ const logger = Logger({ className: 'TransactionService' });
 const PROTO_PATH = 'proto/tx.proto';
 
 class TransactionService extends NetServiceFactory {
-  createService = (url: string, port: string) => {
+  createService = (url, port) => {
     this.createNetService(PROTO_PATH, url, port, 'TransactionService');
   };
 

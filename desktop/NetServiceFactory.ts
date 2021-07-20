@@ -8,9 +8,9 @@ const DEFAULT_PORT = '9092';
 class NetServiceFactory {
   protected service: grpc.Client | null = null;
 
-  private url;
+  private url: string | null = null;
 
-  private port;
+  private port: string | null = null;
 
   createNetService = (protoPath: string, url = '', port = '', serviceName: string) => {
     if (this.url !== url || this.port !== port) {

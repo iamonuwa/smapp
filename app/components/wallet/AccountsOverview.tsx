@@ -134,7 +134,7 @@ const AccountsOverview = () => {
   const dispatch = useDispatch();
 
   const handleSetCurrentAccount = ({ index }: { index: number }) => {
-    dispatch(setCurrentAccount({ index }));
+    dispatch(setCurrentAccount(index));
   };
 
   const copyPublicAddress = async (e: React.MouseEvent) => {

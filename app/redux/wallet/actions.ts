@@ -45,20 +45,23 @@ export const readWalletFiles = () => async (dispatch: AppThDispatch) => {
   return files;
 };
 
-export const createNewWallet = ({ existingMnemonic = '', password, ip, port }: { existingMnemonic?: string | undefined; password: string; ip?: string; port?: string }) => async (
+export const createNewWallet = ({ existingMnemonic = '', password, ip, port }: { existingMnemonic?: string | undefined; password: string; ip?: string; port?: string }) => (
   dispatch: AppThDispatch
-) => {
-  const { error, accounts, mnemonic, meta } = await eventsService.createWallet({ password, existingMnemonic, ip, port });
-  if (error) {
-    console.log(error); // eslint-disable-line no-console
-    throw createError('Error creating new wallet!', () => dispatch(createNewWallet({ existingMnemonic, password, ip, port })));
-  } else {
-    dispatch(setWalletMeta({ meta }));
-    dispatch(setAccounts({ accounts }));
-    dispatch(setMnemonic({ mnemonic }));
-    dispatch(readWalletFiles());
-  }
-};
+) =>
+  eventsService
+    .createWallet({ password, existingMnemonic, ip, port })
+    .then((data) => {
+      const { meta, accounts, mnemonic } = data;
+      dispatch(setWalletMeta({ meta }));
+      dispatch(setAccounts({ accounts }));
+      dispatch(setMnemonic({ mnemonic }));
+      dispatch(readWalletFiles());
+      return data;
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+      throw createError('Error creating new wallet!', () => dispatch(createNewWallet({ existingMnemonic, password, ip, port })));
+    });
 
 export const unlockWallet = ({ password }: { password: string }) => async (dispatch: AppThDispatch, getState: GetState) => {
   const { walletFiles } = getState().wallet;

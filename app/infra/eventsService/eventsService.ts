@@ -6,10 +6,28 @@ import { updateAccountData, setTransactions } from '../../redux/wallet/actions';
 import { setRewards, setPostStatus } from '../../redux/smesher/actions';
 import store from '../../redux/store';
 import { NodeError, NodeStatus, NodeVersionAndBuild, PublicServices, SocketAddress } from '../../../shared/types';
+// Temporary solution to provide types
+// Could be replaced using something like `electron-ipcfy`
+import WalletManager from '../../../desktop/WalletManager';
 
 class EventsService {
-  static createWallet = ({ password, existingMnemonic, ip, port }: { password: string; existingMnemonic: string; ip?: string; port?: string }) =>
-    ipcRenderer.invoke(ipcConsts.W_M_CREATE_WALLET, { password, existingMnemonic, ip, port });
+  static createWallet = ({
+    password,
+    existingMnemonic,
+    ip,
+    port
+  }: {
+    password: string;
+    existingMnemonic: string;
+    ip?: string;
+    port?: string;
+  }): ReturnType<WalletManager['createWalletFile']> =>
+    ipcRenderer.invoke(ipcConsts.W_M_CREATE_WALLET, {
+      password,
+      existingMnemonic,
+      ip,
+      port
+    });
 
   static readWalletFiles = () => ipcRenderer.invoke(ipcConsts.W_M_READ_WALLET_FILES);
 

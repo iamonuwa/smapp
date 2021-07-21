@@ -152,14 +152,16 @@ class WalletManager {
       accounts: [this.__getNewAccountFromTemplate({ index: 0, timestamp, publicKey, secretKey })],
       contacts: []
     };
-    await this.nodeManager.activateNodeProcess();
+    const isWalletOnly = !!url;
+    if (!isWalletOnly) {
+      await this.nodeManager.activateNodeProcess();
+    }
     this.activateWalletManager(url);
     this.txManager.setAccounts({ accounts: dataToEncrypt.accounts });
     const key = fileEncryptionService.createEncryptionKey({ password });
     const encryptedAccountsData = fileEncryptionService.encryptData({ data: JSON.stringify(dataToEncrypt), key });
 
     const netId = StoreService.get('netSettings.netId') as NetId;
-    const isWalletOnly = !!url;
     const mode: WalletMode = isWalletOnly ? [WalletType.REMOTE_API, netId, url] : [WalletType.LOCAL_NODE, netId];
     const meta: WalletMeta = {
       displayName: 'Main Wallet',
@@ -198,8 +200,12 @@ class WalletManager {
       const key = fileEncryptionService.createEncryptionKey({ password });
       const decryptedDataJSON = fileEncryptionService.decryptData({ data: crypto.cipherText, key });
       const { accounts, mnemonic, contacts } = JSON.parse(decryptedDataJSON);
-      await this.nodeManager.activateNodeProcess();
-      this.activateWalletManager(''); // TODO: Support Wallet Only mode
+      if (meta.mode[0] === WalletType.REMOTE_API) {
+        this.activateWalletManager(meta.mode[2]);
+      } else {
+        await this.nodeManager.activateNodeProcess();
+        this.activateWalletManager('');
+      }
       this.txManager.setAccounts({ accounts });
       this.mnemonic = mnemonic;
       return { error: null, accounts, mnemonic, meta, contacts };

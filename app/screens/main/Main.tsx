@@ -25,6 +25,7 @@ import { AppThDispatch, RootState } from '../../types';
 import Version from '../../components/common/Version';
 import { NodeError, NodeStatus } from '../../../shared/types';
 import { eventsService } from '../../infra/eventsService';
+import { isWalletOnly } from '../../redux/wallet/selectors';
 
 const Wrapper = styled.div`
   position: relative;
@@ -106,7 +107,8 @@ const TooltipWrapper = styled.div`
 `;
 
 interface Props extends RouteComponentProps {
-  status: NodeStatus;
+  isWalletOnly: boolean;
+  status: NodeStatus | null;
   logout: any;
   location: {
     hash: string;
@@ -149,7 +151,7 @@ class Main extends Component<Props, State> {
 
   render() {
     const { activeRouteIndex } = this.state;
-    const { nodeError, status, isDarkMode } = this.props;
+    const { isWalletOnly, nodeError, status, isDarkMode } = this.props;
     const img = isDarkMode ? rightDecorationWhite : rightDecoration;
     const settings = isDarkMode ? settingsIconBlack : settingsIcon;
     const getCoins = isDarkMode ? getCoinsIconBlack : getCoinsIcon;
@@ -174,7 +176,7 @@ class Main extends Component<Props, State> {
                 <TooltipWrapper>
                   <NavBarLink onClick={() => this.handleNavigation({ index: 1 })} isActive={activeRouteIndex === 1}>
                     {/* eslint-disable-next-line no-nested-ternary */}
-                    <NetworkIndicator color={nodeError ? smColors.red : status?.isSynced ? smColors.green : smColors.orange} />
+                    <NetworkIndicator color={isWalletOnly ? smColors.green : nodeError ? smColors.red : status?.isSynced ? smColors.green : smColors.orange} />
                     NETWORK
                   </NavBarLink>
                   <CustomTooltip text="NETWORK" isDarkMode={isDarkMode} />
@@ -347,6 +349,7 @@ class Main extends Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
+  isWalletOnly: isWalletOnly(state),
   status: state.node.status,
   nodeError: state.node.error,
   isDarkMode: state.ui.isDarkMode

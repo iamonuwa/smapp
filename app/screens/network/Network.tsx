@@ -116,20 +116,24 @@ const Network = () => {
               </GrayText>
             </DetailsRow>
           )}
-          <DetailsRow>
-            <DetailsTextWrap>
-              <DetailsText>Current Layer</DetailsText>
-              <Tooltip width={250} text="tooltip Current Layer" isDarkMode={isDarkMode} />
-            </DetailsTextWrap>
-            <GrayText>{status?.topLayer || 0}</GrayText>
-          </DetailsRow>
-          <DetailsRow>
-            <DetailsTextWrap>
-              <DetailsText>Verified Layer</DetailsText>
-              <Tooltip width={250} text="tooltip Verified Layer" isDarkMode={isDarkMode} />
-            </DetailsTextWrap>
-            <GrayText>{status?.verifiedLayer || 0}</GrayText>
-          </DetailsRow>
+          {!isWalletOnly && (
+            <>
+              <DetailsRow>
+                <DetailsTextWrap>
+                  <DetailsText>Current Layer</DetailsText>
+                  <Tooltip width={250} text="tooltip Current Layer" isDarkMode={isDarkMode} />
+                </DetailsTextWrap>
+                <GrayText>{status?.topLayer || 0}</GrayText>
+              </DetailsRow>
+              <DetailsRow>
+                <DetailsTextWrap>
+                  <DetailsText>Verified Layer</DetailsText>
+                  <Tooltip width={250} text="tooltip Verified Layer" isDarkMode={isDarkMode} />
+                </DetailsTextWrap>
+                <GrayText>{status?.verifiedLayer || 0}</GrayText>
+              </DetailsRow>
+            </>
+          )}
           <DetailsRow>
             <DetailsTextWrap>
               <DetailsText>Connection Type</DetailsText>
@@ -148,7 +152,7 @@ const Network = () => {
           )}
         </DetailsWrap>
         <FooterWrap>
-          <Link onClick={openLogFile} text="BROWSE LOG FILE" />
+          {!isWalletOnly && <Link onClick={openLogFile} text="BROWSE LOG FILE" />}
           <Tooltip width={250} text="tooltip BROWSE LOG FILE" isDarkMode={isDarkMode} />
           {nodeError && (
             <Button

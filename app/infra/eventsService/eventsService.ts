@@ -5,7 +5,7 @@ import { setNodeError, setNodeStatus, setVersionAndBuild } from '../../redux/nod
 import { updateAccountData, setTransactions } from '../../redux/wallet/actions';
 import { setRewards, setPostStatus } from '../../redux/smesher/actions';
 import store from '../../redux/store';
-import { NodeError, NodeStatus, NodeVersionAndBuild, PublicServices, SocketAddress } from '../../../shared/types';
+import { NodeError, NodeStatus, NodeVersionAndBuild, PublicServices, ApiURL } from '../../../shared/types';
 // Temporary solution to provide types
 // Could be replaced using something like `electron-ipcfy`
 import WalletManager from '../../../desktop/WalletManager';
@@ -14,19 +14,16 @@ class EventsService {
   static createWallet = ({
     password,
     existingMnemonic,
-    ip,
-    port
+    url
   }: {
     password: string;
     existingMnemonic: string;
-    ip?: string;
-    port?: string;
+    url: ApiURL
   }): ReturnType<WalletManager['createWalletFile']> =>
     ipcRenderer.invoke(ipcConsts.W_M_CREATE_WALLET, {
       password,
       existingMnemonic,
-      ip,
-      port
+      url
     });
 
   static readWalletFiles = () => ipcRenderer.invoke(ipcConsts.W_M_READ_WALLET_FILES);
@@ -113,7 +110,7 @@ class EventsService {
 
   /** **************************************  WALLET MANAGER  **************************************** */
 
-  static activateWalletManager = ({ ip, port }: Partial<SocketAddress>): Promise<void> => ipcRenderer.invoke(ipcConsts.W_M_ACTIVATE, { ip, port });
+  static activateWalletManager = (url: ApiURL): Promise<void> => ipcRenderer.invoke(ipcConsts.W_M_ACTIVATE, url);
 
   static getNetworkDefinitions = () => ipcRenderer.invoke(ipcConsts.W_M_GET_NETWORK_DEFINITIONS);
 

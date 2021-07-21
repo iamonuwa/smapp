@@ -1,3 +1,4 @@
+import { ApiURL } from '../shared/types';
 import NetServiceFactory from './NetServiceFactory';
 import Logger from './logger';
 
@@ -6,8 +7,8 @@ const logger = Logger({ className: 'MeshService' });
 const PROTO_PATH = 'proto/mesh.proto';
 
 class MeshService extends NetServiceFactory {
-  createService = (url: string, port: string) => {
-    this.createNetService(PROTO_PATH, url, port, 'MeshService');
+  createService = (url: ApiURL) => {
+    this.createNetService(PROTO_PATH, url, 'MeshService');
   };
 
   getCurrentLayer = () =>

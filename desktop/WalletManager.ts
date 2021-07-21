@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 import { app, dialog, shell, ipcMain, BrowserWindow } from 'electron';
 import { ipcConsts } from '../app/vars';
-import { SocketAddress, WalletFile, WalletMeta } from '../shared/types';
+import { ApiURL, NetId, WalletFile, WalletMeta, WalletMode, WalletType } from '../shared/types';
 import MeshService from './MeshService';
 import GlobalStateService from './GlobalStateService';
 import TransactionManager from './transactionManager';
@@ -63,11 +63,11 @@ class WalletManager {
   });
 
   subscribeToEvents = (mainWindow: BrowserWindow) => {
-    ipcMain.handle(ipcConsts.W_M_ACTIVATE, (_event, request) => {
+    ipcMain.handle(ipcConsts.W_M_ACTIVATE, (_event, url) => {
       try {
-        this.activateWalletManager({ ip: request.ip, port: request.port });
+        this.activateWalletManager(url);
       } catch (e) {
-        logger.error('W_M_ACTIVATE channel', true, request);
+        logger.error('W_M_ACTIVATE channel', true, url);
         throw e;
       }
     });
@@ -137,13 +137,13 @@ class WalletManager {
     });
   };
 
-  activateWalletManager = ({ ip, port }: Partial<SocketAddress>) => {
-    this.meshService.createService(ip, port);
-    this.glStateService.createService(ip, port);
-    this.txService.createService(ip, port);
+  activateWalletManager = (url: ApiURL) => {
+    this.meshService.createService(url);
+    this.glStateService.createService(url);
+    this.txService.createService(url);
   };
 
-  createWalletFile = async ({ password, existingMnemonic, ip = '', port = '' }: { password: string; existingMnemonic: string; ip: string; port: string }) => {
+  createWalletFile = async ({ password, existingMnemonic, url = '' }: { password: string; existingMnemonic: string; url: ApiURL }) => {
     const timestamp = new Date().toISOString().replace(/:/g, '-');
     this.mnemonic = existingMnemonic || cryptoService.generateMnemonic();
     const { publicKey, secretKey } = cryptoService.deriveNewKeyPair({ mnemonic: this.mnemonic, index: 0 });
@@ -153,14 +153,18 @@ class WalletManager {
       contacts: []
     };
     await this.nodeManager.activateNodeProcess();
-    this.activateWalletManager({ ip, port });
+    this.activateWalletManager(url);
     this.txManager.setAccounts({ accounts: dataToEncrypt.accounts });
     const key = fileEncryptionService.createEncryptionKey({ password });
     const encryptedAccountsData = fileEncryptionService.encryptData({ data: JSON.stringify(dataToEncrypt), key });
+
+    const netId = StoreService.get('netSettings.netId') as NetId;
+    const isWalletOnly = !!url;
+    const mode: WalletMode = isWalletOnly ? [WalletType.REMOTE_API, netId, url] : [WalletType.LOCAL_NODE, netId];
     const meta: WalletMeta = {
       displayName: 'Main Wallet',
       created: timestamp,
-      netId: StoreService.get('netSettings.netId'),
+      mode,
       meta: { salt: encryptionConst.DEFAULT_SALT }
     };
     const fileContent: WalletFile = {
@@ -195,7 +199,7 @@ class WalletManager {
       const decryptedDataJSON = fileEncryptionService.decryptData({ data: crypto.cipherText, key });
       const { accounts, mnemonic, contacts } = JSON.parse(decryptedDataJSON);
       await this.nodeManager.activateNodeProcess();
-      this.activateWalletManager({ ip: '', port: '' }); // TODO: Support Wallet Only mode
+      this.activateWalletManager(''); // TODO: Support Wallet Only mode
       this.txManager.setAccounts({ accounts });
       this.mnemonic = mnemonic;
       return { error: null, accounts, mnemonic, meta, contacts };

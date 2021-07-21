@@ -8,6 +8,7 @@ import { walletSecondWhite } from '../../assets/images';
 
 import { smColors } from '../../vars';
 import { RootState } from '../../types';
+import { ApiURL } from '../../../shared/types';
 
 const Wrapper = styled.div`
   display: flex;
@@ -101,7 +102,7 @@ interface Props extends RouteComponentProps {
     hash: string;
     pathname: string;
     search: string;
-    state: { mnemonic?: string; ip?: string; port?: string };
+    state: { mnemonic?: string; url?: ApiURL };
   };
 }
 
@@ -111,7 +112,7 @@ const WalletType = ({ history, location }: Props) => {
   const navigateToExplanation = () => window.open('https://testnet.spacemesh.io/#/guide/setup');
 
   const navigateToCreateWallet = async () => {
-    history.push('/auth/create', { ip: location?.state?.ip, port: location?.state?.port });
+    history.push('/auth/create', { url: location?.state?.url });
   };
 
   return (

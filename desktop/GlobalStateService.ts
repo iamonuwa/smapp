@@ -1,3 +1,4 @@
+import { ApiURL } from '../shared/types';
 import Logger from './logger';
 import NetServiceFactory from './NetServiceFactory';
 import { toHexString } from './utils';
@@ -7,8 +8,8 @@ const logger = Logger({ className: 'GlobalStateService' });
 const PROTO_PATH = 'proto/global_state.proto';
 
 class GlobalStateService extends NetServiceFactory {
-  createService = (url: string, port: string) => {
-    this.createNetService(PROTO_PATH, url, port, 'GlobalStateService');
+  createService = (url: ApiURL) => {
+    this.createNetService(PROTO_PATH, url, 'GlobalStateService');
   };
 
   getGlobalStateHash = () =>

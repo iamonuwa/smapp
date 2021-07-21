@@ -7,6 +7,7 @@ import { StepsContainer, Button, Link, SmallHorizontalPanel, DropDown } from '..
 import { eventsService } from '../../infra/eventsService';
 import { RootState } from '../../types';
 import { smColors } from '../../vars';
+import { ApiURL } from '../../../shared/types';
 
 const Wrapper = styled.div`
   display: flex;
@@ -50,8 +51,7 @@ const AccItem = styled.div<{ isInDropDown: boolean }>`
 type PublicServicesView = {
   label: string;
   text: string;
-  ip: string;
-  port: string;
+  url: ApiURL;
 };
 
 const ConnectToApi = ({ history }: RouteComponentProps) => {
@@ -71,8 +71,7 @@ const ConnectToApi = ({ history }: RouteComponentProps) => {
           services: services.map((service) => ({
             label: service.name,
             text: service.url,
-            ip: service.url,
-            port: ''
+            url: service.url
           }))
         })
       )
@@ -98,10 +97,10 @@ const ConnectToApi = ({ history }: RouteComponentProps) => {
   const getPublicServicesDropdownData = () => (publicServices.loading ? [{ label: 'LOADING... PLEASE WAIT', isDisabled: true }] : publicServices.services);
 
   const handleNext = () => {
-    const { ip, port } = publicServices.services[selectedItemIndex];
+    const { url } = publicServices.services[selectedItemIndex];
     return eventsService
-      .activateWalletManager({ ip, port })
-      .then(() => history.push('/auth/wallet-type', { ip, port }))
+      .activateWalletManager(url)
+      .then(() => history.push('/auth/wallet-type', { url }))
       .catch((err) => console.error(err)); // eslint-disable-line no-console
   };
 

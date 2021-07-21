@@ -2,6 +2,8 @@
 // Wallet
 //
 
+import { ApiURL, NetId } from './misc';
+
 export interface Account {
   displayName: string;
   created: string;
@@ -15,18 +17,25 @@ export interface AccountWithBalance extends Account {
   projectedState?: { balance: number; counter: number };
 }
 
-export interface WalletCrypto {
-  cipher: string;
-  cipherText: string;
+export enum WalletType {
+  LOCAL_NODE = 0,
+  REMOTE_API = 1
 }
+
+export type WalletMode = [WalletType.LOCAL_NODE, NetId] | [WalletType.REMOTE_API, NetId, ApiURL];
 
 export interface WalletMeta {
   displayName: string;
   created: string;
-  netId: number;
+  mode: WalletMode;
   meta: {
     salt: string;
   };
+}
+
+export interface WalletCrypto {
+  cipher: string;
+  cipherText: string;
 }
 
 export interface WalletFile {

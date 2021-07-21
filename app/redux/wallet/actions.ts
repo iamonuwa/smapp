@@ -1,4 +1,4 @@
-import { Account, Contact, WalletMeta } from '../../../shared/types';
+import { Account, ApiURL, Contact, WalletMeta } from '../../../shared/types';
 import { eventsService } from '../../infra/eventsService';
 import { createError, getAddress } from '../../infra/utils';
 import { AppThDispatch, GetState, AccountTxs, Tx } from '../../types';

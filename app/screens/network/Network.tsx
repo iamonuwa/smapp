@@ -9,6 +9,7 @@ import { WrapperWith2SideBars, Link, Tooltip, CustomTimeAgo, Button } from '../.
 import { smColors } from '../../vars';
 import { network } from '../../assets/images';
 import { RootState } from '../../types';
+import { WalletType } from '../../../shared/types';
 
 const Container = styled.div`
   display: flex;
@@ -73,7 +74,7 @@ const Network = () => {
     asyncGetCurrentLayer();
   }, [dispatch]);
 
-  const isWalletOnly = useSelector((state: RootState) => state.wallet.meta.isWalletOnly);
+  const isWalletOnly = useSelector((state: RootState) => state.wallet.meta.mode[0] === WalletType.REMOTE_API);
   const status = useSelector((state: RootState) => state.node.status);
   const nodeError = useSelector((state: RootState) => state.node.error);
   const netName = useSelector((state: RootState) => state.network.netName || 'UNKNOWN NETWORK NAME');

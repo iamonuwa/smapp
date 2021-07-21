@@ -1,3 +1,4 @@
+import { ApiURL } from '../shared/types';
 import NetServiceFactory from './NetServiceFactory';
 import Logger from './logger';
 
@@ -6,8 +7,8 @@ const logger = Logger({ className: 'TransactionService' });
 const PROTO_PATH = 'proto/tx.proto';
 
 class TransactionService extends NetServiceFactory {
-  createService = (url, port) => {
-    this.createNetService(PROTO_PATH, url, port, 'TransactionService');
+  createService = (url: ApiURL) => {
+    this.createNetService(PROTO_PATH, url, 'TransactionService');
   };
 
   submitTransaction = ({ transaction }) =>

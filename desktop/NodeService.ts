@@ -22,7 +22,7 @@ class NodeService extends NetServiceFactory {
   private errorStream;
 
   createService = () => {
-    this.createNetService(PROTO_PATH, '', '', 'NodeService');
+    this.createNetService(PROTO_PATH, '', 'NodeService');
   };
 
   echo = () =>

@@ -9,6 +9,7 @@ import { eventsService } from '../../infra/eventsService';
 import { chevronRightBlack, chevronRightWhite } from '../../assets/images';
 import { smColors } from '../../vars';
 import { RootState } from '../../types';
+import { ApiURL } from '../../../shared/types';
 
 const Wrapper = styled.div`
   display: flex;
@@ -74,7 +75,7 @@ interface Props extends RouteComponentProps {
     hash: string;
     pathname: string;
     search: string;
-    state: { mnemonic?: string; ip?: string; port?: string };
+    state: { mnemonic?: string; url?: ApiURL };
   };
 }
 
@@ -117,7 +118,7 @@ const CreateWallet = ({ history, location }: Props) => {
   const createWallet = async () => {
     if (!isLoaderVisible) {
       setIsLoaderVisible(true);
-      await dispatch(createNewWallet({ existingMnemonic: location?.state?.mnemonic, password, ip: location?.state?.ip, port: location?.state?.port }));
+      await dispatch(createNewWallet({ existingMnemonic: location?.state?.mnemonic, password, url: location?.state?.url }));
       setSubMode(2);
       setIsLoaderVisible(false);
     }
@@ -143,7 +144,7 @@ const CreateWallet = ({ history, location }: Props) => {
     if (subMode === 1 && validate()) {
       createWallet();
     } else if (subMode === 2) {
-      if (location?.state?.ip) {
+      if (location?.state?.url) {
         history.push('/main/wallet');
       } else {
         history.push('/main/node-setup');
